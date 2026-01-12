@@ -5,6 +5,7 @@
 
 import 'dart:math' as math;
 
+import 'package:bitcoin_flutter_starter/screens/widgets/balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,7 @@ import '../providers/wallet_provider.dart';
 import '../router/app_router.dart';
 import '../services/transaction.dart';
 import 'widgets/chart_painter.dart';
+import 'widgets/getting_started_card.dart';
 import 'widgets/info_section.dart';
 import 'widgets/transaction_card.dart';
 
@@ -143,9 +145,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                   ),
                                   shape: BoxShape.circle,
                                 ),
@@ -172,9 +174,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                   ),
                                   shape: BoxShape.circle,
                                 ),
@@ -196,197 +198,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.95),
+                              color: Colors.white.withValues(alpha: 0.95),
                               borderRadius: BorderRadius.circular(32),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
                               ],
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            'Your Balance',
-                                            style: TextStyle(
-                                              color: Color(0xFF9333EA),
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          ShaderMask(
-                                            shaderCallback: (bounds) =>
-                                                const LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF9333EA),
-                                                    Color(0xFFDB2777),
-                                                    Color(0xFFEA580C),
-                                                  ],
-                                                ).createShader(bounds),
-                                            child: const Text(
-                                              '2.4567 BTC',
-                                              style: TextStyle(
-                                                fontSize: 28,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '≈ \$123,456.78',
-                                            style: TextStyle(
-                                              color: Colors.grey[600],
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Transform.rotate(
-                                      angle: 12 * math.pi / 180,
-                                      child: Container(
-                                        width: 64,
-                                        height: 64,
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Color(0xFFA855F7),
-                                              Color(0xFFEC4899),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: const Color(
-                                                0xFFA855F7,
-                                              ).withOpacity(0.4),
-                                              blurRadius: 12,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            '₿',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 28,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                Container(
-                                  height: 1,
-                                  color: const Color(0xFFE9D5FF),
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Color(0xFFECFDF5),
-                                              Color(0xFFD1FAE5),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Today',
-                                              style: TextStyle(
-                                                color: Colors.green[600],
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '+\$1,234',
-                                              style: TextStyle(
-                                                color: Colors.green[700],
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          gradient: const LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Color(0xFFFAF5FF),
-                                              Color(0xFFFCE7F3),
-                                            ],
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Text(
-                                              'This Week',
-                                              style: TextStyle(
-                                                color: Color(0xFF9333EA),
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '+\$8,567',
-                                              style: TextStyle(
-                                                color: Colors.purple[700],
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                            child: BalanceCard(state: walletState),
                           ),
                           const SizedBox(height: 24),
 
@@ -407,6 +229,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                                 shadowColor: const Color(0xFFFB923C),
                                 rotation: 6,
+                                onTab: () => context.push(Routes.send),
                               ),
                               _buildActionButton(
                                 icon: Icons.arrow_downward,
@@ -421,6 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 ),
                                 shadowColor: const Color(0xFFA855F7),
                                 rotation: -6,
+                                onTab: () => context.push(Routes.receive),
                               ),
                               _buildActionButton(
                                 icon: Icons.qr_code,
@@ -429,6 +253,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 shadowColor: null,
                                 rotation: 0,
                                 isGlass: true,
+                                onTab: () {},
                               ),
                               _buildActionButton(
                                 icon: Icons.qr_code_scanner,
@@ -437,6 +262,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 shadowColor: null,
                                 rotation: 0,
                                 isGlass: true,
+                                onTab: () {},
                               ),
                             ],
                           ),
@@ -450,11 +276,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
+                                  color: Colors.black.withValues(alpha: 0.08),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 ),
@@ -556,7 +382,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               Text(
                                 'View All',
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
+                                  color: Colors.white.withValues(alpha: 0.8),
                                   fontSize: 14,
                                 ),
                               ),
@@ -571,7 +397,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               child: TransactionCard(transaction: tx),
                             ),
                           ),
+
+                          const SizedBox(height: 24),
+
                           // Getting started
+                          GettingStartedCard(),
                         ],
                       ),
                     ),
@@ -588,33 +418,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required Gradient? gradient,
     required Color? shadowColor,
     required double rotation,
+    required VoidCallback onTab,
     bool isGlass = false,
   }) {
     return Column(
       children: [
-        Transform.rotate(
-          angle: rotation * math.pi / 180,
-          child: Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: gradient,
-              color: isGlass ? Colors.white.withOpacity(0.25) : null,
-              border: isGlass
-                  ? Border.all(color: Colors.white.withOpacity(0.4))
-                  : null,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: shadowColor != null
-                  ? [
-                      BoxShadow(
-                        color: shadowColor.withOpacity(0.4),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : null,
+        GestureDetector(
+          onTap: onTab,
+          child: Transform.rotate(
+            angle: rotation * math.pi / 180,
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: gradient,
+                color: isGlass ? Colors.white.withValues(alpha: 0.25) : null,
+                border: isGlass
+                    ? Border.all(color: Colors.white.withValues(alpha: 0.4))
+                    : null,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: shadowColor != null
+                    ? [
+                        BoxShadow(
+                          color: shadowColor.withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Icon(icon, color: Colors.white, size: 24),
             ),
-            child: Icon(icon, color: Colors.white, size: 24),
           ),
         ),
         const SizedBox(height: 8),
