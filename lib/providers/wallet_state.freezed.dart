@@ -17,13 +17,15 @@ mixin _$WalletState {
 /// Is the wallet currently initializing?
  bool get isInitializing;/// Is the wallet currently syncing with blockchain?
  bool get isSyncing;/// Has the wallet been initialized?
- bool get isInitialized;/// Current receiving address
+ bool get isInitialized;/// The Send feature is currently sending a transaction?
+ bool get isSending;/// Current receiving address
  String? get currentAddress;/// Total balance in satoshis
  int get totalBalance;/// Confirmed balance in satoshis
  int get confirmedBalance;/// Pending balance in satoshis
  int get pendingBalance;/// Error message if something went wrong
  String? get error;/// Last sync timestamp
- DateTime? get lastSyncTime;
+ DateTime? get lastSyncTime;/// Last transaction ID
+ String? get lastTxID;
 /// Create a copy of WalletState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -34,16 +36,16 @@ $WalletStateCopyWith<WalletState> get copyWith => _$WalletStateCopyWithImpl<Wall
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletState&&(identical(other.isInitializing, isInitializing) || other.isInitializing == isInitializing)&&(identical(other.isSyncing, isSyncing) || other.isSyncing == isSyncing)&&(identical(other.isInitialized, isInitialized) || other.isInitialized == isInitialized)&&(identical(other.currentAddress, currentAddress) || other.currentAddress == currentAddress)&&(identical(other.totalBalance, totalBalance) || other.totalBalance == totalBalance)&&(identical(other.confirmedBalance, confirmedBalance) || other.confirmedBalance == confirmedBalance)&&(identical(other.pendingBalance, pendingBalance) || other.pendingBalance == pendingBalance)&&(identical(other.error, error) || other.error == error)&&(identical(other.lastSyncTime, lastSyncTime) || other.lastSyncTime == lastSyncTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WalletState&&(identical(other.isInitializing, isInitializing) || other.isInitializing == isInitializing)&&(identical(other.isSyncing, isSyncing) || other.isSyncing == isSyncing)&&(identical(other.isInitialized, isInitialized) || other.isInitialized == isInitialized)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.currentAddress, currentAddress) || other.currentAddress == currentAddress)&&(identical(other.totalBalance, totalBalance) || other.totalBalance == totalBalance)&&(identical(other.confirmedBalance, confirmedBalance) || other.confirmedBalance == confirmedBalance)&&(identical(other.pendingBalance, pendingBalance) || other.pendingBalance == pendingBalance)&&(identical(other.error, error) || other.error == error)&&(identical(other.lastSyncTime, lastSyncTime) || other.lastSyncTime == lastSyncTime)&&(identical(other.lastTxID, lastTxID) || other.lastTxID == lastTxID));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isInitializing,isSyncing,isInitialized,currentAddress,totalBalance,confirmedBalance,pendingBalance,error,lastSyncTime);
+int get hashCode => Object.hash(runtimeType,isInitializing,isSyncing,isInitialized,isSending,currentAddress,totalBalance,confirmedBalance,pendingBalance,error,lastSyncTime,lastTxID);
 
 @override
 String toString() {
-  return 'WalletState(isInitializing: $isInitializing, isSyncing: $isSyncing, isInitialized: $isInitialized, currentAddress: $currentAddress, totalBalance: $totalBalance, confirmedBalance: $confirmedBalance, pendingBalance: $pendingBalance, error: $error, lastSyncTime: $lastSyncTime)';
+  return 'WalletState(isInitializing: $isInitializing, isSyncing: $isSyncing, isInitialized: $isInitialized, isSending: $isSending, currentAddress: $currentAddress, totalBalance: $totalBalance, confirmedBalance: $confirmedBalance, pendingBalance: $pendingBalance, error: $error, lastSyncTime: $lastSyncTime, lastTxID: $lastTxID)';
 }
 
 
@@ -54,7 +56,7 @@ abstract mixin class $WalletStateCopyWith<$Res>  {
   factory $WalletStateCopyWith(WalletState value, $Res Function(WalletState) _then) = _$WalletStateCopyWithImpl;
 @useResult
 $Res call({
- bool isInitializing, bool isSyncing, bool isInitialized, String? currentAddress, int totalBalance, int confirmedBalance, int pendingBalance, String? error, DateTime? lastSyncTime
+ bool isInitializing, bool isSyncing, bool isInitialized, bool isSending, String? currentAddress, int totalBalance, int confirmedBalance, int pendingBalance, String? error, DateTime? lastSyncTime, String? lastTxID
 });
 
 
@@ -71,18 +73,20 @@ class _$WalletStateCopyWithImpl<$Res>
 
 /// Create a copy of WalletState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isInitializing = null,Object? isSyncing = null,Object? isInitialized = null,Object? currentAddress = freezed,Object? totalBalance = null,Object? confirmedBalance = null,Object? pendingBalance = null,Object? error = freezed,Object? lastSyncTime = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isInitializing = null,Object? isSyncing = null,Object? isInitialized = null,Object? isSending = null,Object? currentAddress = freezed,Object? totalBalance = null,Object? confirmedBalance = null,Object? pendingBalance = null,Object? error = freezed,Object? lastSyncTime = freezed,Object? lastTxID = freezed,}) {
   return _then(_self.copyWith(
 isInitializing: null == isInitializing ? _self.isInitializing : isInitializing // ignore: cast_nullable_to_non_nullable
 as bool,isSyncing: null == isSyncing ? _self.isSyncing : isSyncing // ignore: cast_nullable_to_non_nullable
 as bool,isInitialized: null == isInitialized ? _self.isInitialized : isInitialized // ignore: cast_nullable_to_non_nullable
+as bool,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
 as bool,currentAddress: freezed == currentAddress ? _self.currentAddress : currentAddress // ignore: cast_nullable_to_non_nullable
 as String?,totalBalance: null == totalBalance ? _self.totalBalance : totalBalance // ignore: cast_nullable_to_non_nullable
 as int,confirmedBalance: null == confirmedBalance ? _self.confirmedBalance : confirmedBalance // ignore: cast_nullable_to_non_nullable
 as int,pendingBalance: null == pendingBalance ? _self.pendingBalance : pendingBalance // ignore: cast_nullable_to_non_nullable
 as int,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,lastSyncTime: freezed == lastSyncTime ? _self.lastSyncTime : lastSyncTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,lastTxID: freezed == lastTxID ? _self.lastTxID : lastTxID // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -167,10 +171,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isInitializing,  bool isSyncing,  bool isInitialized,  String? currentAddress,  int totalBalance,  int confirmedBalance,  int pendingBalance,  String? error,  DateTime? lastSyncTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isInitializing,  bool isSyncing,  bool isInitialized,  bool isSending,  String? currentAddress,  int totalBalance,  int confirmedBalance,  int pendingBalance,  String? error,  DateTime? lastSyncTime,  String? lastTxID)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WalletState() when $default != null:
-return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.currentAddress,_that.totalBalance,_that.confirmedBalance,_that.pendingBalance,_that.error,_that.lastSyncTime);case _:
+return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.isSending,_that.currentAddress,_that.totalBalance,_that.confirmedBalance,_that.pendingBalance,_that.error,_that.lastSyncTime,_that.lastTxID);case _:
   return orElse();
 
 }
@@ -188,10 +192,10 @@ return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.c
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isInitializing,  bool isSyncing,  bool isInitialized,  String? currentAddress,  int totalBalance,  int confirmedBalance,  int pendingBalance,  String? error,  DateTime? lastSyncTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isInitializing,  bool isSyncing,  bool isInitialized,  bool isSending,  String? currentAddress,  int totalBalance,  int confirmedBalance,  int pendingBalance,  String? error,  DateTime? lastSyncTime,  String? lastTxID)  $default,) {final _that = this;
 switch (_that) {
 case _WalletState():
-return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.currentAddress,_that.totalBalance,_that.confirmedBalance,_that.pendingBalance,_that.error,_that.lastSyncTime);case _:
+return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.isSending,_that.currentAddress,_that.totalBalance,_that.confirmedBalance,_that.pendingBalance,_that.error,_that.lastSyncTime,_that.lastTxID);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +212,10 @@ return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.c
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isInitializing,  bool isSyncing,  bool isInitialized,  String? currentAddress,  int totalBalance,  int confirmedBalance,  int pendingBalance,  String? error,  DateTime? lastSyncTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isInitializing,  bool isSyncing,  bool isInitialized,  bool isSending,  String? currentAddress,  int totalBalance,  int confirmedBalance,  int pendingBalance,  String? error,  DateTime? lastSyncTime,  String? lastTxID)?  $default,) {final _that = this;
 switch (_that) {
 case _WalletState() when $default != null:
-return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.currentAddress,_that.totalBalance,_that.confirmedBalance,_that.pendingBalance,_that.error,_that.lastSyncTime);case _:
+return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.isSending,_that.currentAddress,_that.totalBalance,_that.confirmedBalance,_that.pendingBalance,_that.error,_that.lastSyncTime,_that.lastTxID);case _:
   return null;
 
 }
@@ -223,7 +227,7 @@ return $default(_that.isInitializing,_that.isSyncing,_that.isInitialized,_that.c
 
 
 class _WalletState extends WalletState {
-  const _WalletState({this.isInitializing = false, this.isSyncing = false, this.isInitialized = false, this.currentAddress, this.totalBalance = 0, this.confirmedBalance = 0, this.pendingBalance = 0, this.error, this.lastSyncTime}): super._();
+  const _WalletState({this.isInitializing = false, this.isSyncing = false, this.isInitialized = false, this.isSending = false, this.currentAddress, this.totalBalance = 0, this.confirmedBalance = 0, this.pendingBalance = 0, this.error, this.lastSyncTime, this.lastTxID}): super._();
   
 
 /// Is the wallet currently initializing?
@@ -232,6 +236,8 @@ class _WalletState extends WalletState {
 @override@JsonKey() final  bool isSyncing;
 /// Has the wallet been initialized?
 @override@JsonKey() final  bool isInitialized;
+/// The Send feature is currently sending a transaction?
+@override@JsonKey() final  bool isSending;
 /// Current receiving address
 @override final  String? currentAddress;
 /// Total balance in satoshis
@@ -244,6 +250,8 @@ class _WalletState extends WalletState {
 @override final  String? error;
 /// Last sync timestamp
 @override final  DateTime? lastSyncTime;
+/// Last transaction ID
+@override final  String? lastTxID;
 
 /// Create a copy of WalletState
 /// with the given fields replaced by the non-null parameter values.
@@ -255,16 +263,16 @@ _$WalletStateCopyWith<_WalletState> get copyWith => __$WalletStateCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletState&&(identical(other.isInitializing, isInitializing) || other.isInitializing == isInitializing)&&(identical(other.isSyncing, isSyncing) || other.isSyncing == isSyncing)&&(identical(other.isInitialized, isInitialized) || other.isInitialized == isInitialized)&&(identical(other.currentAddress, currentAddress) || other.currentAddress == currentAddress)&&(identical(other.totalBalance, totalBalance) || other.totalBalance == totalBalance)&&(identical(other.confirmedBalance, confirmedBalance) || other.confirmedBalance == confirmedBalance)&&(identical(other.pendingBalance, pendingBalance) || other.pendingBalance == pendingBalance)&&(identical(other.error, error) || other.error == error)&&(identical(other.lastSyncTime, lastSyncTime) || other.lastSyncTime == lastSyncTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WalletState&&(identical(other.isInitializing, isInitializing) || other.isInitializing == isInitializing)&&(identical(other.isSyncing, isSyncing) || other.isSyncing == isSyncing)&&(identical(other.isInitialized, isInitialized) || other.isInitialized == isInitialized)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.currentAddress, currentAddress) || other.currentAddress == currentAddress)&&(identical(other.totalBalance, totalBalance) || other.totalBalance == totalBalance)&&(identical(other.confirmedBalance, confirmedBalance) || other.confirmedBalance == confirmedBalance)&&(identical(other.pendingBalance, pendingBalance) || other.pendingBalance == pendingBalance)&&(identical(other.error, error) || other.error == error)&&(identical(other.lastSyncTime, lastSyncTime) || other.lastSyncTime == lastSyncTime)&&(identical(other.lastTxID, lastTxID) || other.lastTxID == lastTxID));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isInitializing,isSyncing,isInitialized,currentAddress,totalBalance,confirmedBalance,pendingBalance,error,lastSyncTime);
+int get hashCode => Object.hash(runtimeType,isInitializing,isSyncing,isInitialized,isSending,currentAddress,totalBalance,confirmedBalance,pendingBalance,error,lastSyncTime,lastTxID);
 
 @override
 String toString() {
-  return 'WalletState(isInitializing: $isInitializing, isSyncing: $isSyncing, isInitialized: $isInitialized, currentAddress: $currentAddress, totalBalance: $totalBalance, confirmedBalance: $confirmedBalance, pendingBalance: $pendingBalance, error: $error, lastSyncTime: $lastSyncTime)';
+  return 'WalletState(isInitializing: $isInitializing, isSyncing: $isSyncing, isInitialized: $isInitialized, isSending: $isSending, currentAddress: $currentAddress, totalBalance: $totalBalance, confirmedBalance: $confirmedBalance, pendingBalance: $pendingBalance, error: $error, lastSyncTime: $lastSyncTime, lastTxID: $lastTxID)';
 }
 
 
@@ -275,7 +283,7 @@ abstract mixin class _$WalletStateCopyWith<$Res> implements $WalletStateCopyWith
   factory _$WalletStateCopyWith(_WalletState value, $Res Function(_WalletState) _then) = __$WalletStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isInitializing, bool isSyncing, bool isInitialized, String? currentAddress, int totalBalance, int confirmedBalance, int pendingBalance, String? error, DateTime? lastSyncTime
+ bool isInitializing, bool isSyncing, bool isInitialized, bool isSending, String? currentAddress, int totalBalance, int confirmedBalance, int pendingBalance, String? error, DateTime? lastSyncTime, String? lastTxID
 });
 
 
@@ -292,18 +300,20 @@ class __$WalletStateCopyWithImpl<$Res>
 
 /// Create a copy of WalletState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isInitializing = null,Object? isSyncing = null,Object? isInitialized = null,Object? currentAddress = freezed,Object? totalBalance = null,Object? confirmedBalance = null,Object? pendingBalance = null,Object? error = freezed,Object? lastSyncTime = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isInitializing = null,Object? isSyncing = null,Object? isInitialized = null,Object? isSending = null,Object? currentAddress = freezed,Object? totalBalance = null,Object? confirmedBalance = null,Object? pendingBalance = null,Object? error = freezed,Object? lastSyncTime = freezed,Object? lastTxID = freezed,}) {
   return _then(_WalletState(
 isInitializing: null == isInitializing ? _self.isInitializing : isInitializing // ignore: cast_nullable_to_non_nullable
 as bool,isSyncing: null == isSyncing ? _self.isSyncing : isSyncing // ignore: cast_nullable_to_non_nullable
 as bool,isInitialized: null == isInitialized ? _self.isInitialized : isInitialized // ignore: cast_nullable_to_non_nullable
+as bool,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
 as bool,currentAddress: freezed == currentAddress ? _self.currentAddress : currentAddress // ignore: cast_nullable_to_non_nullable
 as String?,totalBalance: null == totalBalance ? _self.totalBalance : totalBalance // ignore: cast_nullable_to_non_nullable
 as int,confirmedBalance: null == confirmedBalance ? _self.confirmedBalance : confirmedBalance // ignore: cast_nullable_to_non_nullable
 as int,pendingBalance: null == pendingBalance ? _self.pendingBalance : pendingBalance // ignore: cast_nullable_to_non_nullable
 as int,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,lastSyncTime: freezed == lastSyncTime ? _self.lastSyncTime : lastSyncTime // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,lastTxID: freezed == lastTxID ? _self.lastTxID : lastTxID // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

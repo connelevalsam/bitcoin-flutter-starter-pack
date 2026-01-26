@@ -6,6 +6,8 @@
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../models/fee_estimate.dart';
+
 /// Service layer for Bitcoin wallet operations
 /// Handles all BDK interactions and key management
 class WalletService {
@@ -151,5 +153,152 @@ class WalletService {
     await _storage.delete(key: _descriptorKey);
     _wallet = null;
     _blockchain = null;
+  }
+
+  /// Build a transaction
+  /// Returns the transaction and return PSBT with fee info
+  Future<(PartiallySignedTransaction psbt, TransactionDetails details)>
+  buildTransaction({
+    required String recipientAddress,
+    required int amountSats,
+    required double feeRate,
+  }) async {
+    if (_wallet == null) throw Exception('Wallet not initialized');
+
+    try {
+      // Create address object
+      final address = await Address.fromString(
+        s: recipientAddress,
+        network: Network.testnet,
+      );
+
+      // Get script pubkey from address
+      final script = await address.scriptPubkey();
+
+      // Create transaction builder
+      final txBuilder = TxBuilder();
+
+      // Add recipient output
+      await txBuilder.addRecipient(script, BigInt.from(amountSats));
+
+      // Set fee rate
+      await txBuilder.feeRate(feeRate);
+
+      // Enable RBF (Replace-By-Fee) - allows fee bumping later
+      await txBuilder.enableRbf();
+
+      // Finish building - returns (PSBT, TransactionDetails)
+      final result = await txBuilder.finish(_wallet!);
+
+      return result;
+    } catch (e) {
+      throw Exception('Failed to build transaction: $e');
+    }
+  }
+
+  /// Estimate fee for a transaction
+  Future<FeeEstimate> estimateFee({
+    required String recipientAddress,
+    required int amountSats,
+    required FeeSpeed speed,
+  }) async {
+    try {
+      // Build transaction to get fee estimate
+      final (psbt, details) = await buildTransaction(
+        recipientAddress: recipientAddress,
+        amountSats: amountSats,
+        feeRate: speed.satsPerVByte,
+      );
+
+      // Get fee from transaction details
+      final fee = details.fee?.toInt() ?? 0;
+
+      // Estimate transaction size
+      // Virtual size = fee / rate
+      final vsize = fee > 0 ? (fee / speed.satsPerVByte).ceil() : 0;
+
+      return FeeEstimate(
+        feeSats: fee,
+        feeRate: speed.satsPerVByte,
+        txSize: vsize,
+        speed: speed,
+      );
+    } catch (e) {
+      throw Exception('Failed to estimate fee: $e');
+    }
+  }
+
+  /// Sign and broadcast transaction
+  Future<String> sendTransaction({
+    required String recipientAddress,
+    required int amountSats,
+    required double feeRate,
+  }) async {
+    if (_wallet == null || _blockchain == null) {
+      throw Exception('Wallet or blockchain not initialized');
+    }
+
+    try {
+      // Build transaction
+      final (psbt, details) = await buildTransaction(
+        recipientAddress: recipientAddress,
+        amountSats: amountSats,
+        feeRate: feeRate,
+      );
+
+      // Sign the PSBT
+      final signResult = await _wallet!.sign(
+        psbt: psbt,
+        signOptions: const SignOptions(
+          trustWitnessUtxo: true,
+          allowAllSighashes: false,
+          removePartialSigs: true,
+          tryFinalize: true,
+          signWithTapInternalKey: true,
+          allowGrinding: false,
+        ),
+      );
+
+      // Check if signing was successful
+      if (!signResult) {
+        throw Exception('Failed to sign transaction');
+      }
+
+      // Extract the signed transaction
+      final transaction = await psbt.extractTx();
+
+      // Broadcast to network
+      await _blockchain!.broadcast(transaction: transaction);
+
+      // Get transaction ID
+      final txid = await transaction.txid();
+
+      return txid;
+    } catch (e) {
+      throw Exception('Failed to send transaction: $e');
+    }
+  }
+
+  /// Validate Bitcoin address
+  Future<bool> validateAddress(String address) async {
+    try {
+      final addr = await Address.fromString(
+        s: address,
+        network: Network.testnet,
+      );
+
+      // If we got here without error, address is valid for testnet
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Get list of transactions
+  Future<List<TransactionDetails>> getTransactions() async {
+    if (_wallet == null) throw Exception('Wallet not initialized');
+
+    final transactions = await _wallet!.listTransactions(includeRaw: false);
+    return transactions;
   }
 }

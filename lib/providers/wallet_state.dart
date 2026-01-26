@@ -20,6 +20,9 @@ class WalletState with _$WalletState {
     /// Has the wallet been initialized?
     @Default(false) bool isInitialized,
 
+    /// The Send feature is currently sending a transaction?
+    @Default(false) bool isSending,
+
     /// Current receiving address
     String? currentAddress,
 
@@ -37,6 +40,9 @@ class WalletState with _$WalletState {
 
     /// Last sync timestamp
     DateTime? lastSyncTime,
+
+    /// Last transaction ID
+    String? lastTxID,
   }) = _WalletState;
 
   const WalletState._();
@@ -49,6 +55,9 @@ class WalletState with _$WalletState {
 
   /// Helper: Format balance as sats
   String get balanceInSats => '$totalBalance sats';
+
+  /// Helper: Format balance as sats
+  bool get canSend => isReady && confirmedBalance > 0 && !isSending;
 
   @override
   // TODO: implement confirmedBalance
@@ -85,4 +94,12 @@ class WalletState with _$WalletState {
   @override
   // TODO: implement totalBalance
   int get totalBalance => throw UnimplementedError();
+
+  @override
+  // TODO: implement isSending
+  bool get isSending => throw UnimplementedError();
+
+  @override
+  // TODO: implement lastTxID
+  String? get lastTxID => throw UnimplementedError();
 }

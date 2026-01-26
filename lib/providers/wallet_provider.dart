@@ -7,6 +7,7 @@ import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:bitcoin_flutter_starter/providers/wallet_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/fee_estimate.dart';
 import '../services/wallet_service.dart';
 
 /// Provider for WalletService singleton
@@ -111,5 +112,71 @@ class WalletNotifier extends StateNotifier<WalletState> {
     await _walletService.deleteWallet();
     state = const WalletState();
     await initializeWallet();
+  }
+
+  /// Estimate fee for sending
+  Future<FeeEstimate> estimateFee({
+    required String recipientAddress,
+    required int amountSats,
+    required FeeSpeed speed,
+  }) async {
+    return await _walletService.estimateFee(
+      recipientAddress: recipientAddress,
+      amountSats: amountSats,
+      speed: speed,
+    );
+  }
+
+  /// Validate Bitcoin address
+  Future<bool> validateAddress(String address) async {
+    return await _walletService.validateAddress(address);
+  }
+
+  /// Send Bitcoin
+  Future<String> sendBitcoin({
+    required String recipientAddress,
+    required int amountSats,
+    required double feeRate,
+  }) async {
+    if (!state.canSend) {
+      throw Exception('Cannot send: wallet not ready or insufficient balance');
+    }
+
+    // Validate recipient address
+    final isValid = await validateAddress(recipientAddress);
+    if (!isValid) {
+      throw Exception('Invalid testnet address');
+    }
+
+    // Check sufficient balance
+    if (amountSats > state.confirmedBalance) {
+      throw Exception('Insufficient confirmed balance');
+    }
+
+    state = state.copyWith(isSending: true, error: null);
+
+    try {
+      // Send transaction
+      final txId = await _walletService.sendTransaction(
+        recipientAddress: recipientAddress,
+        amountSats: amountSats,
+        feeRate: feeRate,
+      );
+
+      // Sync wallet to update balance
+      await _syncWallet();
+
+      state = state.copyWith(isSending: false, lastTxID: txId);
+
+      return txId;
+    } catch (e) {
+      state = state.copyWith(isSending: false, error: e.toString());
+      rethrow;
+    }
+  }
+
+  /// Get transaction history
+  Future<List<TransactionDetails>> getTransactions() async {
+    return await _walletService.getTransactions();
   }
 }
